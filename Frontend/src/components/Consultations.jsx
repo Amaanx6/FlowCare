@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CalendarIcon, MapPin, Search, Star, Clock, DollarSign, ChevronDown, Sun, Moon, LayoutDashboard, MessageSquare, HeartPulse, Home, GraduationCap, ShoppingBag, ActivitySquare, Stethoscope, Bot, ChevronRight } from 'lucide-react'
+import { CalendarIcon, MapPin, Search, Star, Clock, DollarSign, ChevronDown, Sun, Moon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import Sidebar from './Sidebar'
 
 const specializations = [
   "Gynecology",
@@ -51,7 +52,6 @@ export function Consultations() {
   const [selectedSpecialization, setSelectedSpecialization] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true')
-  const [sidebarVisible, setSidebarVisible] = useState(true)
 
   const toggleDarkMode = () => {
     setDarkMode(prevMode => {
@@ -61,57 +61,11 @@ export function Consultations() {
     })
   }
 
-  const toggleSidebar = () => {
-    setSidebarVisible(!sidebarVisible)
-  }
-
-  const SidebarLink = ({ icon, label, path, active = false }) => {
-    return (
-      <button
-        onClick={() => navigate(path)}
-        className={`flex items-center space-x-2 w-full px-2 py-2 rounded-lg transition-colors ${
-          active
-            ? 'bg-pink-200 dark:bg-pink-900 text-pink-800 dark:text-pink-200'
-            : 'text-gray-900 dark:text-gray-300 hover:bg-pink-100 dark:hover:bg-gray-700'
-        }`}
-      >
-        {icon}
-        <span>{label}</span>
-      </button>
-    )
-  }
-
   return (
     <div className={`flex h-screen ${darkMode ? 'dark' : ''}`}>
-      {/* Sidebar */}
-      <aside className={`bg-pink-100 dark:bg-gray-800 w-64 min-h-screen p-4 fixed transition-all duration-300 ease-in-out ${sidebarVisible ? 'translate-x-0' : '-translate-x-full'}`} style={{ zIndex: 40 }}>
-        <div className="px-4 py-4 flex flex-col space-y-2">
-          <h1 className="text-2xl font-bold text-pink-600 dark:text-pink-400 mb-4">FlowCare</h1>
-          <SidebarLink icon={<LayoutDashboard size={20} />} label="Dashboard" path="/dashboard" />
-          <SidebarLink icon={<Home size={20} />} label="Home" path="/" />
-          <SidebarLink icon={<GraduationCap size={20} />} label="Education" path="/blogs" />
-          <SidebarLink icon={<ShoppingBag size={20} />} label="Shop" path="/Ecom" />
-          <SidebarLink icon={<ActivitySquare size={20} />} label="Track Your Health" path="/tracker" />
-          <SidebarLink icon={<Stethoscope size={20} />} label="Expert Consultation" path="/consultations" active />
-          <SidebarLink icon={<Bot size={20} />} label="AI Chatbot" path="/ChatBot" />
-          <SidebarLink icon={<HeartPulse size={20} />} label="HealthLens" path="/symptomsanalyzer" />
-          <SidebarLink icon={<MessageSquare size={20} />} label="Forums" path="/forums" />
-        </div>
-      </aside>
+      <Sidebar />
 
-      <button
-        onClick={toggleSidebar}
-        className="fixed left-0 top-4 z-50 p-2 bg-pink-600 text-white rounded-r-md transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50"
-        style={{
-          transform: sidebarVisible ? 'translateX(256px)' : 'translateX(0)',
-        }}
-        aria-label={sidebarVisible ? 'Hide sidebar' : 'Show sidebar'}
-      >
-        <ChevronRight size={24} className={`transition-transform duration-300 ${sidebarVisible ? 'rotate-180' : 'rotate-0'}`} />
-      </button>
-
-      {/* Main Content */}
-      <main className={`flex-1 p-8 overflow-auto bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out ${sidebarVisible ? 'ml-64' : 'ml-0'}`}>
+      <main className="flex-1 p-8 overflow-auto bg-white dark:bg-gray-900 transition-all duration-300 ease-in-out">
         <div className="container mx-auto py-8 px-4">
           <div className="flex justify-between items-center mb-8">
             <motion.h1 
@@ -208,22 +162,17 @@ export function Consultations() {
                       <p className="text-gray-600 dark:text-gray-300">{doctor.specialization}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                    <Star className="h-4 w-4 fill-current text-yellow-400" />
-                    <span>{doctor.rating}</span>
-                    <span>({doctor.reviewCount} reviews)</span>
+                  <div className="text-sm text-gray-600 dark:text-gray-300 space-y-2">
+                    <div>
+                      <Star className="inline-block text-yellow-400" size={18} /> {doctor.rating} ({doctor.reviewCount} reviews)
+                    </div>
+                    <div>
+                      <CalendarIcon className="inline-block text-gray-400" size={18} /> Available: {doctor.availableDate}
+                    </div>
+                    <div>
+                      <DollarSign className="inline-block text-green-400" size={18} /> Price: ${doctor.price}
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                    <Clock className="h-4 w-4" />
-                    <span>Next available: {new Date(doctor.availableDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300 mb-4">
-                    <DollarSign className="h-4 w-4" />
-                    <span>${doctor.price} per consultation</span>
-                  </div>
-                  <button className="w-full bg-pink-500 text-white py-2 px-4 rounded-md hover:bg-pink-600 transition-colors duration-300">
-                    Book Appointment
-                  </button>
                 </div>
               </motion.div>
             ))}
@@ -233,4 +182,3 @@ export function Consultations() {
     </div>
   )
 }
-
